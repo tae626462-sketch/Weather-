@@ -164,6 +164,13 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
 .res{list-style:none;margin:8px 0 0;padding:0;max-height:34vh;overflow:auto}
 .res button{width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:.6em .2em}
 .res button small{display:block;color:var(--muted);font-size:.82rem}
+.res{max-height:46vh}
+.res .rl{font-weight:500}
+.res .rk{font-style:normal;font-size:.72rem;margin-left:.5em;padding:0 .5em;border-radius:999px;background:var(--sky-soft);color:var(--ink);vertical-align:.1em}
+.res .vbtn{color:var(--sky);font-family:var(--head);font-weight:500;border-bottom:0;padding-top:.8em}
+.res .vbtn[disabled]{opacity:.55}
+.res.sub{max-height:none;margin:0;overflow:visible}
+#vRes .pkmsg{margin:6px 0}
 .pkfoot{display:flex;justify-content:flex-end;margin-top:16px}
 .close{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:.45em 1.2em;font-family:var(--head)}
 
@@ -242,6 +249,7 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
       <a class="call" href="tel:1182">🌦️ กรมอุตุฯ <b>1182</b></a>
     </div>
     <p>อากาศบ้านเรา คำนวณข้อความเตือนอัตโนมัติจากแบบจำลองพยากรณ์อากาศ (Open-Meteo) และอัปเดตเองทุก 10 นาที ใช้ประกอบการตัดสินใจเท่านั้น ให้ยึดประกาศของกรมอุตุนิยมวิทยา ปภ. และผู้ใหญ่บ้านเป็นหลัก</p>
+    <p>ข้อมูลพิกัดตำบล: กรมการปกครอง (data.go.th) ข้อมูลหมู่บ้าน: © OpenStreetMap contributors</p>
     <p id="notiRow" hidden><button class="lnk" id="notiBtn">เปิดการแจ้งเตือนบนเครื่องเมื่อมีภัยระดับเตือนภัยขึ้นไป</button></p>
     <p class="by">อากาศบ้านเรา<span>By Thitipong Srisomwong</span><span id="ver"></span></p>
   </footer>
@@ -252,11 +260,11 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
     <h3 id="pkTitle">เลือกพื้นที่ของคุณ</h3>
     <button class="gps" id="gpsBtn">📡 ใช้ตำแหน่งที่อยู่ตอนนี้ (GPS)</button>
     <p class="pkmsg" id="pkMsg"></p>
+    <label for="q">หรือค้นหาตำบล อำเภอ หมู่บ้าน (พิมพ์ภาษาไทยได้เลย)</label>
+    <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="เช่น หนองบัว, ต.แม่สาย, บ้านดอนแก้ว">
+    <ul class="res" id="results"></ul>
     <label for="provSel">หรือเลือกจังหวัด</label>
     <select id="provSel"><option value="">แตะเพื่อเลือกจังหวัด</option></select>
-    <label for="q">หรือค้นหาอำเภอ ตำบล หมู่บ้าน</label>
-    <input id="q" type="search" autocomplete="off" placeholder="เช่น แม่สาย หรือ Mae Sai">
-    <ul class="res" id="results"></ul>
     <div class="pkfoot"><button class="close" id="closePk">ปิด</button></div>
   </div>
 </dialog>
@@ -270,7 +278,7 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
 'use strict';
 
 /* ================== ตั้งค่า ================== */
-const APP_VERSION = '2.0 (2 ต.ค. 2569)';
+const APP_VERSION = '2.1 (2 ต.ค. 2569)';
 const REFRESH_MS = 10 * 60 * 1000;   // อัปเดตอัตโนมัติทุก 10 นาที
 
 /* สถิติผู้เข้าชม (GoatCounter) ใส่รหัสเว็บที่สมัครไว้ ถ้าเว้นว่าง = ปิดการนับ */
@@ -986,40 +994,171 @@ function useGPS(){
   navigator.geolocation.getCurrentPosition(async pos => {
     const lat = +pos.coords.latitude.toFixed(4), lon = +pos.coords.longitude.toFixed(4);
     let name = 'ใกล้ จ.' + nearestProvince(lat, lon);
-    try {
-      const r = await getJSON('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=th', 6000);
-      const nm = [r.locality, r.city && r.city !== r.locality ? r.city : '', r.principalSubdivision].filter(Boolean).join(' ');
-      if (nm) name = nm;
-    } catch (e) {}
+    try { await loadGeo(); const t = nearestTambon(lat, lon); if (t) name = 'ใกล้ ' + t.place; } catch (e) {}
     setPlace({ name, lat, lon });
   }, err => {
     msg.textContent = err.code === 1 ? 'ไม่ได้รับอนุญาตให้ใช้ตำแหน่ง เลือกจังหวัดหรือค้นหาแทนได้เลย' : 'หาตำแหน่งไม่สำเร็จ เลือกจังหวัดหรือค้นหาแทนได้เลย';
   }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 });
 }
-let searchTimer = null, searchSeq = 0;
+/* ================== ค้นหาพื้นที่ (ภาษาไทย ระดับตำบล/หมู่บ้าน) ================== */
+// ข้อมูลตำบล อำเภอ ทั้งประเทศ (places.json) ค้นหาในเครื่อง ใช้ได้แม้ไม่มีเน็ต
+let GEO = null, geoP = null;
+const BKK = 'กรุงเทพมหานคร';
+const loose = s => s.toLowerCase().replace(/[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E\s.\-]/g, '');   // ตัดสระบน-ล่าง วรรณยุกต์ ช่องว่าง ไว้จับคำพิมพ์ผิดเล็กน้อย
+function loadGeo(){
+  if (GEO) return Promise.resolve(GEO);
+  if (!geoP){
+    geoP = fetch('places.json').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then(j => {
+      const items = [];
+      // จังหวัด: ใช้พิกัดตัวเมือง
+      PROVINCES.forEach(([, list]) => list.forEach(([n, a, b]) => items.push({
+        k: 'p', n, e: '', label: n === BKK ? n : 'จ.' + n, ctx: 'ตัวจังหวัด', full: n, lat: a, lon: b, place: n === BKK ? n : 'จ.' + n })));
+      const A = j.a.map(([n, pi, lat, lon, e]) => {
+        const prov = j.p[pi], bkk = prov === BKK;
+        const it = { k: 'a', n, e: e || '', prov, bkk, lat, lon,
+          label: (bkk ? 'เขต' : 'อ.') + n, ctx: bkk ? BKK : 'จ.' + prov, full: n + ' ' + prov + ' ' + (e || '') };
+        it.place = it.label + ' ' + (bkk ? 'กรุงเทพฯ' : 'จ.' + prov);
+        items.push(it); return it;
+      });
+      j.t.forEach(([n, ai, lat, lon, e]) => {
+        const a = A[ai], bkk = a.bkk;
+        items.push({ k: 't', n, e: e || '', lat, lon,
+          label: (bkk ? 'แขวง' : 'ต.') + n,
+          ctx: (bkk ? 'เขต' : 'อ.') + a.n + ' ' + (bkk ? 'กรุงเทพฯ' : 'จ.' + a.prov),
+          full: n + ' ' + a.n + ' ' + a.prov + ' ' + (e || ''),
+          place: (bkk ? 'แขวง' : 'ต.') + n + ' ' + (bkk ? 'กรุงเทพฯ' : 'จ.' + a.prov) });
+      });
+      items.forEach(it => { it.ln = loose(it.n); it.lf = loose(it.full); it.le = it.e.toLowerCase(); });
+      GEO = items; return GEO;
+    }).catch(e => { geoP = null; throw e; });
+  }
+  return geoP;
+}
+
+const PREFIX = [['ตำบล','t'],['แขวง','t'],['ต.','t'],['อำเภอ','a'],['เขต','a'],['อ.','a'],['จังหวัด','p'],['จ.','p']];
+function parseQuery(q){
+  const toks = []; let pending = null;
+  q.trim().replace(/\s+/g, ' ').split(' ').forEach(w => {
+    if (!w) return;
+    const exact = PREFIX.find(([p]) => w === p);
+    if (exact){ pending = exact[1]; return; }               // "ต. หนองบัว" (มีช่องว่างหลังคำนำหน้า)
+    let kind = pending, s = w; pending = null;
+    for (const [p, k] of PREFIX){ if (s.startsWith(p) && s.length > p.length && !/^จ\.ป\.ร/.test(s)){ kind = k; s = s.slice(p.length); break; } }
+    s = s.replace(/^[.\s]+/, '');
+    if (s) toks.push({ s, l: loose(s), low: s.toLowerCase(), kind });
+  });
+  return toks;
+}
+function nameScore(it, t){
+  if (t.kind && t.kind !== it.k) return -1;
+  if (it.n === t.s) return 0;
+  if (it.n.startsWith(t.s)) return 1;
+  if (it.n.includes(t.s)) return 2;
+  if (it.le && t.low.length >= 3){ if (it.le === t.low) return 0; if (it.le.startsWith(t.low)) return 1; if (it.le.includes(t.low)) return 2; }
+  if (t.l.length >= 2 && it.ln.includes(t.l)) return 3;      // พิมพ์วรรณยุกต์/สระผิด
+  return -1;
+}
+function searchLocal(q){
+  const toks = parseQuery(q); if (!toks.length || !GEO) return [];
+  const KORD = { p: 0, a: 1, t: 2 }, out = [];
+  for (const it of GEO){
+    let best = -1, bi = -1;
+    toks.forEach((t, i) => { const sc = nameScore(it, t); if (sc >= 0 && (best < 0 || sc < best)){ best = sc; bi = i; } });
+    if (best < 0) continue;
+    // คำอื่นที่พิมพ์มา ต้องตรงกับอำเภอหรือจังหวัดของรายการนี้
+    if (!toks.every((t, i) => i === bi || it.lf.includes(t.l) || (it.le && it.full.toLowerCase().includes(t.low)))) continue;
+    out.push({ it, sc: best * 10 + KORD[it.k] });
+  }
+  out.sort((a, b) => a.sc - b.sc || a.it.n.length - b.it.n.length);
+  return out.slice(0, 40).map(x => x.it);
+}
+function nearestTambon(lat, lon){
+  if (!GEO) return null;
+  let best = null, bd = Infinity; const c = Math.cos(lat * Math.PI / 180);
+  for (const it of GEO){ if (it.k !== 't') continue; const dd = (it.lat - lat) ** 2 + ((it.lon - lon) * c) ** 2; if (dd < bd){ bd = dd; best = it; } }
+  return best;
+}
+
+let searchTimer = null, searchSeq = 0, villageSeq = 0;
+function resultRow(label, ctx, tag){
+  return '<span class="rl">' + esc(label) + (tag ? '<i class="rk">' + esc(tag) + '</i>' : '') + '</span><small>' + esc(ctx) + '</small>';
+}
+function renderLocal(q){
+  const ul = $('#results');
+  const list = searchLocal(q);
+  const KIND = { p: 'จังหวัด', a: 'อำเภอ', t: 'ตำบล' };
+  let h = list.map((it, k) => '<li><button data-k="' + k + '">' + resultRow(it.label, it.ctx, KIND[it.k]) + '</button></li>').join('');
+  if (!list.length) h = '<li class="pkmsg">ไม่พบชื่อตำบลหรืออำเภอนี้ ลองค้นหาเป็นหมู่บ้านด้านล่าง</li>';
+  else if (list.length >= 10 && parseQuery(q).length < 2) h = '<li class="pkmsg">พบหลายแห่ง พิมพ์ชื่ออำเภอหรือจังหวัดต่อท้ายให้แคบลง เช่น "' + esc(q) + ' อุดร"</li>' + h;
+  h += '<li><button class="vbtn" id="vBtn">🔎 ค้นหาหมู่บ้าน "' + esc(q) + '" เพิ่มเติม <small>ต้องต่ออินเทอร์เน็ต</small></button></li><li id="vRes"></li>';
+  ul.innerHTML = h;
+  ul.querySelectorAll('button[data-k]').forEach(b => b.addEventListener('click', () => {
+    const it = list[+b.dataset.k]; pickPlace({ name: it.place, lat: it.lat, lon: it.lon });
+  }));
+  $('#vBtn').addEventListener('click', () => searchVillages(q));
+}
 function onSearch(){
   clearTimeout(searchTimer);
   const q = $('#q').value.trim();
   const ul = $('#results');
+  villageSeq++;
   if (q.length < 2){ ul.innerHTML = ''; return; }
-  searchTimer = setTimeout(async () => {
+  searchTimer = setTimeout(() => {
     const seq = ++searchSeq;
-    ul.innerHTML = '<li class="pkmsg">กำลังค้นหา...</li>';
+    if (GEO){ renderLocal(q); return; }
+    ul.innerHTML = '<li class="pkmsg">กำลังเตรียมข้อมูลตำบล...</li>';
+    loadGeo().then(() => { if (seq === searchSeq) renderLocal($('#q').value.trim()); })
+      .catch(() => { if (seq === searchSeq) searchVillages(q); });
+  }, 200);
+}
+function pickPlace(p){ $('#q').value = ''; $('#results').innerHTML = ''; setPlace(p); }
+
+// หมู่บ้าน: ค้นจาก OpenStreetMap (Nominatim) เฉพาะตอนกดค้นหา ไม่ค้นทุกตัวอักษร ตามกติกาการใช้งาน
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const shortAdm = s => s.replace(/^ตำบล\s*/, 'ต.').replace(/^อำเภอ\s*/, 'อ.').replace(/^จังหวัด\s*/, 'จ.').replace(/^แขวง\s*/, 'แขวง').replace(/^เขต\s*/, 'เขต');
+const OSM_KIND = { village: 'หมู่บ้าน', hamlet: 'หมู่บ้าน', isolated_dwelling: 'หมู่บ้าน', town: 'เมือง', city: 'เมือง', suburb: 'ชุมชน', quarter: 'ชุมชน', neighbourhood: 'ชุมชน', municipality: 'เทศบาล' };
+async function searchVillages(q){
+  const seq = ++villageSeq;
+  const box = $('#vRes'), btn = $('#vBtn');
+  if (!box) return;
+  if (btn) btn.disabled = true;
+  box.innerHTML = '<p class="pkmsg">กำลังค้นหาหมู่บ้าน...</p>';
+  const base = q.replace(/^(หมู่บ้าน|ม\.\s*\d+\s*)/, '').trim();
+  const variants = [q]; if (!/^บ้าน/.test(base)) variants.push('บ้าน' + base);
+  const seen = new Set(), found = [];
+  let failed = 0;
+  for (let k = 0; k < variants.length; k++){
+    if (k) await sleep(1100);                                  // ไม่เกิน 1 ครั้งต่อวินาที
+    if (seq !== villageSeq) return;
     try {
-      const r = await getJSON('https://geocoding-api.open-meteo.com/v1/search?' + new URLSearchParams({ name: q, count: 10, language: 'th', format: 'json', countryCode: 'TH' }), 8000);
-      if (seq !== searchSeq) return;
-      const list = (r && r.results) || [];
-      if (!list.length){ ul.innerHTML = '<li class="pkmsg">ไม่พบชื่อนี้ ลองพิมพ์ภาษาอังกฤษ หรือเลือกจังหวัดแทน</li>'; return; }
-      ul.innerHTML = list.map((p, k) => '<li><button data-k="' + k + '">' + esc(p.name) + '<small>' + esc([p.admin3, p.admin2, p.admin1].filter(Boolean).join(' ')) + '</small></button></li>').join('');
-      ul.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
-        const p = list[+b.dataset.k];
-        setPlace({ name: p.name + (p.admin1 ? ' ' + p.admin1 : ''), lat: p.latitude, lon: p.longitude });
-        $('#q').value = ''; ul.innerHTML = '';
-      }));
-    } catch (e) {
-      if (seq === searchSeq) ul.innerHTML = '<li class="pkmsg">ค้นหาไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่</li>';
-    }
-  }, 450);
+      const r = await getJSON('https://nominatim.openstreetmap.org/search?' + new URLSearchParams({
+        q: variants[k], format: 'jsonv2', countrycodes: 'th', 'accept-language': 'th', limit: 10 }), 10000);
+      (r || []).forEach(x => { const id = x.osm_type + x.osm_id; if (!seen.has(id)){ seen.add(id); found.push(x); } });
+    } catch (e) { failed++; }
+    if (seq !== villageSeq) return;
+    renderVillages(found, failed === variants.length && k === variants.length - 1, k < variants.length - 1);
+  }
+}
+function renderVillages(list, failed, more){
+  const box = $('#vRes'); if (!box) return;
+  if (!list.length){
+    box.innerHTML = '<p class="pkmsg">' + (more ? 'กำลังค้นหาเพิ่ม...' : failed ? 'ค้นหาไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่' : 'ไม่พบหมู่บ้านชื่อนี้ ลองพิมพ์ชื่อตำบลหรืออำเภอแทน') + '</p>';
+    return;
+  }
+  const rows = list.map(x => {
+    const parts = String(x.display_name || '').split(', ').filter(p => p && !/^\d{5}$/.test(p) && p !== 'ประเทศไทย');
+    const name = x.name || parts[0] || 'ไม่ทราบชื่อ';
+    const ctx = parts.slice(1).filter(p => p !== name).slice(-3).map(shortAdm).join(' ');
+    const tam = parts.slice(1).find(p => /^(ตำบล|แขวง)/.test(p));
+    const prov = parts.slice(1).find(p => /^จังหวัด/.test(p)) || (parts.includes(BKK) ? 'กรุงเทพฯ' : '');
+    return { name, ctx, lat: +x.lat, lon: +x.lon, kind: OSM_KIND[x.addresstype] || '',
+      place: name + (tam ? ' ' + shortAdm(tam) : prov ? ' ' + shortAdm(prov) : '') };
+  });
+  box.innerHTML = '<ul class="res sub">' + rows.map((r, k) => '<li><button data-v="' + k + '">' + resultRow(r.name, r.ctx, r.kind) + '</button></li>').join('') + '</ul>' +
+    '<p class="pkmsg">' + (more ? 'กำลังค้นหาเพิ่ม... ' : '') + 'ข้อมูลหมู่บ้าน © OpenStreetMap contributors</p>';
+  box.querySelectorAll('button[data-v]').forEach(b => b.addEventListener('click', () => {
+    const r = rows[+b.dataset.v]; pickPlace({ name: r.place, lat: r.lat, lon: r.lon });
+  }));
 }
 
 /* ================== สถิติผู้เข้าชม ================== */
@@ -1081,6 +1220,8 @@ function init(){
   $('#closePk').addEventListener('click', () => $('#picker').close ? $('#picker').close() : $('#picker').removeAttribute('open'));
   $('#gpsBtn').addEventListener('click', useGPS);
   $('#q').addEventListener('input', onSearch);
+  $('#q').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); const q = $('#q').value.trim(); if (q.length >= 2){ clearTimeout(searchTimer); (GEO ? Promise.resolve() : loadGeo().catch(() => {})).then(() => { if (GEO) renderLocal(q); else $('#results').innerHTML = '<li id="vRes"></li>'; searchVillages(q); }); } } });
+  $('#placeBtn').addEventListener('click', () => { loadGeo().catch(() => {}); });
   $('#refreshBtn').addEventListener('click', () => load(false));
   $('#speakBtn').addEventListener('click', speak);
   if ('speechSynthesis' in window){ speechSynthesis.getVoices(); speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', () => {}); }
