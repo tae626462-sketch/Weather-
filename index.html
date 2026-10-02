@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2F7D4F">
 <meta name="author" content="Thitipong Srisomwong">
+<meta name="description" content="สภาพอากาศเรียลไทม์ พร้อมคำเตือนภาษาชาวบ้าน น้ำท่วม พายุฝน ลูกเห็บ">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="อากาศบ้านเรา">
 <title>อากาศบ้านเรา ประกาศเตือนภัยสภาพอากาศ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +31,7 @@
   :root{ --ink:#E4ECE9; --muted:#9DAEAA; --paper:#121A1C; --surface:#1B2629; --line:#2C3A3D; --sky:#6FB0DA; --sky-soft:#21384A; }
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%;font-size:106.25%}
 html.big{font-size:125%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.65}
@@ -59,6 +67,7 @@ button{cursor:pointer}
 #summary{margin:0;max-width:36em;font-size:1.04rem}
 .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 .hbtn{display:inline-flex;align-items:center;gap:.45em;font-family:var(--head);font-weight:500;padding:.62em 1.2em;border-radius:999px;border:2px solid currentColor;background:transparent;color:inherit}
+.hbtn.inst{background:#F6C534;color:#1D2A2E;border-color:#F6C534}
 .hbtn.main{background:#fff;color:#1D2A2E;border-color:#fff}
 .hbtn[disabled]{opacity:.6;cursor:progress}
 .upd{margin:14px 0 0;font-size:.86rem;opacity:.9}
@@ -182,6 +191,7 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
     <div class="acts">
       <button id="speakBtn" class="hbtn main">🔊 ฟังประกาศ</button>
       <button id="refreshBtn" class="hbtn">⟳ โหลดใหม่</button>
+      <button id="installBtn" class="hbtn inst" hidden>📲 ติดตั้งแอป</button>
     </div>
     <p class="upd" id="updated"></p>
     <div class="err" id="err" role="alert"></div>
@@ -233,7 +243,7 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
     </div>
     <p>อากาศบ้านเรา คำนวณข้อความเตือนอัตโนมัติจากแบบจำลองพยากรณ์อากาศ (Open-Meteo) และอัปเดตเองทุก 10 นาที ใช้ประกอบการตัดสินใจเท่านั้น ให้ยึดประกาศของกรมอุตุนิยมวิทยา ปภ. และผู้ใหญ่บ้านเป็นหลัก</p>
     <p id="notiRow" hidden><button class="lnk" id="notiBtn">เปิดการแจ้งเตือนบนเครื่องเมื่อมีภัยระดับเตือนภัยขึ้นไป</button></p>
-    <p class="by">อากาศบ้านเรา<span>By Thitipong Srisomwong</span></p>
+    <p class="by">อากาศบ้านเรา<span>By Thitipong Srisomwong</span><span id="ver"></span></p>
   </footer>
 </main>
 
@@ -260,6 +270,7 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
 'use strict';
 
 /* ================== ตั้งค่า ================== */
+const APP_VERSION = '2.0 (2 ต.ค. 2569)';
 const REFRESH_MS = 10 * 60 * 1000;   // อัปเดตอัตโนมัติทุก 10 นาที
 
 /* สถิติผู้เข้าชม (GoatCounter) ใส่รหัสเว็บที่สมัครไว้ ถ้าเว้นว่าง = ปิดการนับ */
@@ -452,12 +463,15 @@ async function load(silent){
     state.aq = aq.status === 'fulfilled' ? aq.value : null;
     state.flood = fl.status === 'fulfilled' ? fl.value : null;
     state.lastFetch = Date.now();
+    store.set('wx_cache', { place: state.place, data: state.data, aq: state.aq, flood: state.flood, t: state.lastFetch });
     $('#err').classList.remove('on');
     render();
     if (!silent) toast('อัปเดตข้อมูลแล้ว');
   } catch (e) {
     const el = $('#err');
-    el.textContent = 'โหลดข้อมูลไม่สำเร็จ ตรวจดูว่าเครื่องต่ออินเทอร์เน็ตอยู่ แล้วกด "โหลดใหม่"' + (state.data ? ' (ตอนนี้แสดงข้อมูลชุดก่อนหน้า)' : '');
+    el.textContent = state.data
+      ? 'ไม่มีอินเทอร์เน็ต กำลังแสดงข้อมูลที่บันทึกไว้เมื่อ' + agoText(state.lastFetch) + ' คำเตือนยังคำนวณตามเวลาปัจจุบันให้ พอต่อเน็ตได้แอปจะอัปเดตเอง'
+      : 'โหลดข้อมูลไม่สำเร็จ ตรวจดูว่าเครื่องต่ออินเทอร์เน็ตอยู่ แล้วกด "โหลดใหม่"';
     el.classList.add('on');
     if (!state.data){
       $('#levelText').textContent = 'ยังไม่มีข้อมูล';
@@ -490,16 +504,21 @@ function riverInfo(fl, today){
 function metrics(d, aq, fl){
   const H = d.hourly, D = d.daily, C = d.current;
   const T = H.time;
-  const nowKey = C.time.slice(0, 13) + ':00';
+  // ถ้าข้อมูลเก่า (เช่น ตอนออฟไลน์) ให้เลื่อน "ตอนนี้" ตามนาฬิกาเครื่อง พยากรณ์รายชั่วโมงจะยังใช้ได้
+  const off = typeof d.utc_offset_seconds === 'number' ? d.utc_offset_seconds : 0;
+  const devKey = new Date(Date.now() + off * 1000).toISOString().slice(0, 13) + ':00';
+  let nowKey = C.time.slice(0, 13) + ':00';
+  const fresh = !(devKey > nowKey && T.indexOf(devKey) >= 0);
+  if (!fresh) nowKey = devKey;
   let i0 = T.indexOf(nowKey);
-  if (i0 < 0){ i0 = 0; for (let i = 0; i < T.length; i++){ if (T[i] <= C.time) i0 = i; else break; } }
-  const today = C.time.slice(0, 10);
+  if (i0 < 0){ i0 = 0; for (let i = 0; i < T.length; i++){ if (T[i] <= nowKey) i0 = i; else break; } }
+  const today = nowKey.slice(0, 10);
   let di = D.time.indexOf(today); if (di < 0) di = 0;
   const P = H.precipitation, PP = H.precipitation_probability || [], W = H.weather_code;
   const next = (arr, n) => sl(arr, i0 + 1, i0 + 1 + n);
 
   const m = {
-    i0, di, today, hour: +C.time.slice(11, 13),
+    i0, di, today, fresh, hour: +nowKey.slice(11, 13),
     past72: sum(sl(P, i0 - 71, i0 + 1)),
     r6: sum(next(P, 6)), r12: sum(next(P, 12)), r24: sum(next(P, 24)), r48: sum(next(P, 48)),
     rate12: mx(next(P, 12)),
@@ -508,7 +527,7 @@ function metrics(d, aq, fl){
     tmin24: mn(sl(H.temperature_2m, i0, i0 + 24)),
     feel24: mx(sl(H.apparent_temperature, i0, i0 + 24)),
     uv24: mx(sl(H.uv_index, i0, i0 + 24)),
-    rainNow: (C.precipitation || 0) >= 0.1 || RAIN_CODES.has(C.weather_code),
+    rainNow: fresh ? ((C.precipitation || 0) >= 0.1 || RAIN_CODES.has(C.weather_code)) : ((P[i0] || 0) >= 0.1 || RAIN_CODES.has(W[i0])),
     rainIdx: [], thunderIdx: [], fog: false,
     rainyDays: 0,
     pm: (aq && aq.current && aq.current.pm2_5 != null) ? aq.current.pm2_5 : null,
@@ -772,7 +791,7 @@ function render(){
   const rainTxt = m.r24 >= 0.5
     ? 'ฝนที่จะตกใน 24 ชั่วโมงข้างหน้ารวมประมาณ ' + mm(m.r24) + ' มม. ถือว่า' + rainCat(m.r24)
     : 'ไม่น่าจะมีฝนใน 24 ชั่วโมงข้างหน้า';
-  $('#summary').textContent = 'ตอนนี้' + w.text + ' ' + rnd(C.temperature_2m) + '° รู้สึกเหมือน ' + rnd(C.apparent_temperature) + '° ' + rainTxt;
+  $('#summary').textContent = (m.fresh ? 'ตอนนี้' : 'เมื่อ ' + C.time.slice(11, 16) + ' น. ') + w.text + ' ' + rnd(C.temperature_2m) + '° รู้สึกเหมือน ' + rnd(C.apparent_temperature) + '° ' + rainTxt;
   document.title = LEVELS[level] + ': ' + lines.join(' ') + ' | อากาศบ้านเรา';
 
   // ต้องทำอะไรบ้าง
@@ -876,11 +895,16 @@ function forSpeech(s){
     .replace(/PM2\.5/g, 'พีเอ็ม 2.5');
 }
 
+function agoText(t){
+  const mins = Math.floor((Date.now() - t) / 60000);
+  if (mins < 1) return 'สักครู่';
+  if (mins < 60) return ' ' + mins + ' นาทีที่แล้ว';
+  if (mins < 1440) return ' ' + Math.floor(mins / 60) + ' ชั่วโมงที่แล้ว';
+  return ' ' + Math.floor(mins / 1440) + ' วันที่แล้ว';
+}
 function updateStamp(){
   if (!state.data) return;
-  const mins = Math.floor((Date.now() - state.lastFetch) / 60000);
-  const ago = mins < 1 ? 'เมื่อสักครู่' : mins + ' นาทีที่แล้ว';
-  $('#updated').textContent = 'อัปเดต' + ago + ' ข้อมูล ณ เวลา ' + state.data.current.time.slice(11, 16) + ' น. ระบบอัปเดตเองทุก 10 นาที';
+  $('#updated').textContent = 'อัปเดตเมื่อ' + agoText(state.lastFetch) + ' ข้อมูล ณ เวลา ' + state.data.current.time.slice(11, 16) + ' น. ระบบอัปเดตเองทุก 10 นาที';
 }
 
 function tick(){
@@ -1019,6 +1043,30 @@ function initVisits(){
   });
 }
 
+/* ================== ติดตั้งเป็นแอป (PWA) ================== */
+let installEvt = null;
+function initPWA(){
+  if ('serviceWorker' in navigator && location.protocol === 'https:'){
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+  const btn = $('#installBtn');
+  const standalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); installEvt = e;
+    if (!standalone) btn.hidden = false;
+  });
+  btn.addEventListener('click', async () => {
+    if (!installEvt) return;
+    installEvt.prompt();
+    try {
+      const r = await installEvt.userChoice;
+      if (r && r.outcome === 'accepted') toast('ติดตั้งแล้ว ดูไอคอน "อากาศบ้านเรา" ที่หน้าจอหลัก');
+    } catch (e) {}
+    installEvt = null; btn.hidden = true;
+  });
+  window.addEventListener('appinstalled', () => { btn.hidden = true; installEvt = null; });
+}
+
 /* ================== เริ่มทำงาน ================== */
 function init(){
   buildProvinceSelect();
@@ -1046,6 +1094,15 @@ function init(){
   const saved = store.get('wx_place');
   state.place = (saved && typeof saved.lat === 'number') ? saved : DEFAULT_PLACE;
   $('#placeName').textContent = state.place.name;
+  $('#ver').textContent = 'เวอร์ชัน ' + APP_VERSION;
+  initPWA();
+  // เปิดแอปแล้วเห็นข้อมูลชุดล่าสุดทันที (ใช้ได้แม้ไม่มีเน็ต) แล้วค่อยโหลดของใหม่
+  const cache = store.get('wx_cache');
+  if (cache && cache.data && cache.place && Math.abs(cache.place.lat - state.place.lat) < 1e-4 &&
+      Math.abs(cache.place.lon - state.place.lon) < 1e-4 && Date.now() - cache.t < 3 * 864e5){
+    state.data = cache.data; state.aq = cache.aq; state.flood = cache.flood; state.lastFetch = cache.t;
+    try { render(); } catch (e) {}
+  }
   tick();
   load(true);
   initVisits();

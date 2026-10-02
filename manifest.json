@@ -1,0 +1,21 @@
+{
+  "name": "อากาศบ้านเรา เตือนภัยสภาพอากาศ",
+  "short_name": "อากาศบ้านเรา",
+  "description": "สภาพอากาศเรียลไทม์ พร้อมคำเตือนภาษาชาวบ้าน น้ำท่วม พายุฝน ลูกเห็บ อากาศเปลี่ยนแปลง โดย Thitipong Srisomwong",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2F7D4F",
+  "theme_color": "#2F7D4F",
+  "lang": "th",
+  "dir": "ltr",
+  "categories": ["weather", "utilities"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
