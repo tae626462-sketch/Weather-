@@ -171,6 +171,58 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:#1D2A2E;color:#fff;padding:.6em 1.1em;border-radius:12px;font-size:.92rem;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .25s;z-index:10}
 .toast.on{opacity:1}
 
+/* ความกดอากาศ */
+.pxhead{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin:0 0 12px}
+.pxv b{font-family:var(--head);font-weight:600;font-size:2.1rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.pxv span{color:var(--muted);margin-left:.35em}
+.pxchip{font-family:var(--head);font-weight:500;padding:.15em .85em;border-radius:999px;background:var(--surface);border:1.5px solid var(--line)}
+.pxchip.up{background:var(--sky-soft);border-color:transparent}
+.pxchip.down{background:var(--lv1);color:var(--lv1-ink);border-color:transparent}
+.pxsub{flex-basis:100%;margin:0;font-size:.88rem;color:var(--muted)}
+.pxreads{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:8px}
+.pxreads li{display:grid;grid-template-columns:2rem 1fr;gap:8px;background:var(--surface);border-radius:12px;padding:10px 12px}
+.pxreads .ic{font-size:1.35rem;line-height:1.35}
+.pxfig{margin:0 0 12px;background:var(--surface);border-radius:14px;padding:10px 10px 4px;position:relative}
+.pxleg{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:.8rem;color:var(--muted);margin:0 0 2px}
+.pxleg i{display:inline-block;width:16px;border-top:2px solid;vertical-align:middle;margin-right:6px}
+.pxleg .kraw{border-color:var(--muted);opacity:.5}
+.pxleg .ksm{border-color:var(--sky)}
+#pxChart{display:block;max-width:100%;height:auto;touch-action:pan-y;outline:none}
+#pxChart:focus-visible{outline:3px solid var(--sky);outline-offset:2px;border-radius:6px}
+#pxChart .pxgrid{stroke:var(--line);stroke-width:1}
+#pxChart .pxfc{fill:var(--sky-soft);opacity:.45}
+#pxChart .pxraw{fill:none;stroke:var(--muted);stroke-opacity:.45;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+#pxChart .pxsm{fill:none;stroke:var(--sky);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+#pxChart .pxnow{stroke:var(--ink);stroke-width:1}
+#pxChart .pxcross{stroke:var(--ink);stroke-width:1;opacity:.6}
+#pxChart .pxdot{fill:var(--sky);stroke:var(--surface);stroke-width:2}
+.pxax{fill:var(--muted);font-size:11px;font-family:var(--body)}
+.pxnowt,.pxcomp{fill:var(--ink);font-family:var(--head);font-weight:500}
+.pxtip{position:absolute;top:30px;pointer-events:none;background:#1D2A2E;color:#fff;border-radius:10px;padding:6px 10px;font-size:.8rem;line-height:1.4;box-shadow:0 2px 8px rgba(0,0,0,.2);white-space:nowrap}
+.pxtip b{display:block;font-family:var(--head);font-weight:600;font-size:.98rem}
+.pxtip span{display:block;opacity:.85}
+#pxMap{display:block;width:100%;max-width:340px;height:auto;margin:0 auto}
+#pxMap .pxring{fill:none;stroke:var(--line);stroke-width:1}
+#pxMap .pxhome{fill:var(--lv0);stroke:var(--surface);stroke-width:2}
+#pxMap .pxhomet{fill:var(--ink);font-family:var(--head);font-weight:500}
+#pxMap .pxH{fill:var(--sky);stroke:var(--surface);stroke-width:2}
+#pxMap .pxL{fill:var(--lv2);stroke:var(--surface);stroke-width:2}
+#pxMap .pxLd{fill:var(--lv2)}
+#pxMap .pxHL{fill:#fff;font-family:var(--head);font-weight:600;font-size:15px}
+#pxMap .pxarrH{stroke:var(--sky);stroke-width:2;fill:none}
+#pxMap .pxarrL{stroke:var(--lv2);stroke-width:2;fill:none;stroke-linejoin:round}
+#pxMap .pxfillH{fill:var(--sky)}
+#pxMap .pxfillL{fill:var(--lv2)}
+.pxmapfig .note{margin:4px 2px 6px}
+.pxmore{margin:8px 0 0;font-size:.92rem}
+.pxmore summary{cursor:pointer;color:var(--sky);font-family:var(--head);font-weight:500;padding:4px 0}
+.pxmore ul{margin:6px 0 0;padding-left:1.2em}
+.pxmore li{margin:0 0 6px}
+.pxtbl{width:100%;border-collapse:collapse;margin-top:6px;font-variant-numeric:tabular-nums}
+.pxtbl th,.pxtbl td{text-align:right;padding:6px 4px;border-bottom:1px solid var(--line)}
+.pxtbl th:first-child,.pxtbl td:first-child{text-align:left}
+.pxtbl th{font-family:var(--head);font-weight:500;color:var(--muted);font-size:.84rem}
+
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -221,6 +273,40 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
     <ul class="days" id="days"></ul>
   </section>
 
+  <section class="blk" id="pxBlk" hidden>
+    <h2>ความกดอากาศบอกอะไร</h2>
+    <div class="pxhead">
+      <div class="pxv"><b id="pxNow">–</b><span>hPa</span></div>
+      <div class="pxchip" id="pxChip">→ ทรงตัว</div>
+      <p class="pxsub" id="pxSub"></p>
+    </div>
+    <ul class="pxreads" id="pxReads"></ul>
+    <figure class="pxfig">
+      <figcaption class="pxleg"><span><i class="kraw"></i>ค่ารายชั่วโมง (ขึ้นลงวันละ 2 รอบเป็นปกติ)</span><span><i class="ksm"></i>แนวโน้มจริง</span></figcaption>
+      <svg id="pxChart" role="img" aria-label="กราฟความกดอากาศ ย้อนหลัง 2 วัน และพยากรณ์ 4 วัน แตะหรือเลื่อนนิ้วเพื่อดูค่า" tabindex="0"></svg>
+      <div class="pxtip" id="pxTip" hidden></div>
+    </figure>
+    <figure class="pxfig pxmapfig" id="pxMapFig" hidden>
+      <svg id="pxMap" viewBox="0 0 320 284" role="img" aria-label="แผนผังระบบความกดอากาศรอบบ้าน"></svg>
+      <figcaption class="note">แผนผังระบบอากาศรอบบ้าน: <b>H</b> = ความกดอากาศสูง (ลมหนาว อากาศแห้ง) <b>L</b> = ความกดอากาศต่ำ (ฝน พายุ) ลูกศรคือทิศที่กำลังเคลื่อน วงกลมเส้นใน 500 กม. เส้นนอก 1,000 กม. จุดที่อยู่ริมสุดคือไกลกว่า 1,350 กม.</figcaption>
+    </figure>
+    <details class="pxmore">
+      <summary>ดูเป็นตาราง</summary>
+      <table class="pxtbl" id="pxTbl"></table>
+    </details>
+    <details class="pxmore">
+      <summary>อ่านความกดอากาศยังไง</summary>
+      <ul>
+        <li><b>สูงขึ้น</b> อากาศเย็นและแห้งจากทางเหนือแผ่ลงมา ช่วงหน้าหนาวคือ "ลมหนาวมา" ถ้าเจออากาศร้อนอบอ้าวช่วงหน้าร้อน จะเกิด "พายุฤดูร้อน" ลมแรง ลูกเห็บ</li>
+        <li><b>ลดลง</b> อากาศลอยตัวขึ้นเกิดเมฆ ฝนมีแนวโน้มเพิ่ม</li>
+        <li><b>ลดลงเร็วมาก</b> มีหย่อมความกดอากาศต่ำหรือพายุเข้าใกล้ ฝนตกหนักต่อเนื่อง ลมแรง</li>
+        <li><b>ต่ำและร้อนแห้ง</b> ช่วงหน้าร้อน ลมใต้พัดเอาอากาศร้อนเข้ามา เรียกว่า "ลมร้อน"</li>
+        <li>ความกดอากาศขึ้นลงวันละ 2 รอบเป็นปกติ (สูงช่วงสิบโมงเช้ากับสี่ทุ่ม ต่ำช่วงตีสี่กับสี่โมงเย็น) แอปจึงเทียบกับเวลาเดียวกันของวันก่อนเพื่อดูแนวโน้มจริง</li>
+        <li>หน่วย hPa (เฮกโตปาสกาล) ในไทยปกติอยู่ราว 1005–1015</li>
+      </ul>
+    </details>
+  </section>
+
   <section class="blk">
     <h2>ตัวเลขที่ใช้ตัดสิน</h2>
     <dl class="facts" id="facts"></dl>
@@ -263,7 +349,7 @@ dialog::backdrop{background:rgba(10,20,22,.6)}
 'use strict';
 
 /* ================== ตั้งค่า ================== */
-const APP_VERSION = '2.2 (2 ต.ค. 2569)';
+const APP_VERSION = '2.3 (10 ต.ค. 2569)';
 const REFRESH_MS = 10 * 60 * 1000;   // อัปเดตอัตโนมัติทุก 10 นาที
 
 /* สถิติผู้เข้าชม (GoatCounter) นับเบื้องหลัง ดูได้ที่หน้าสถิติของเจ้าของ ไม่แสดงบนแอป ถ้าเว้นว่าง = ปิดการนับ */
@@ -423,7 +509,7 @@ async function getJSON(url, ms){
 
 /* ================== ดึงข้อมูล ================== */
 function urls(lat, lon){
-  const HOURLY = 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_gusts_10m,uv_index,is_day';
+  const HOURLY = 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_gusts_10m,uv_index,is_day,pressure_msl,wind_direction_10m,wind_speed_10m,relative_humidity_2m,dew_point_2m';
   const wxUrl = hourly => 'https://api.open-meteo.com/v1/forecast?' + new URLSearchParams({
     latitude: lat, longitude: lon,
     current: 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_gusts_10m',
@@ -459,6 +545,7 @@ async function load(silent){
     store.set('wx_cache', { place: state.place, data: state.data, aq: state.aq, flood: state.flood, t: state.lastFetch });
     $('#err').classList.remove('on');
     render();
+    loadGrid();
     if (!silent) toast('อัปเดตข้อมูลแล้ว');
   } catch (e) {
     const el = $('#err');
@@ -595,6 +682,7 @@ function metrics(d, aq, fl){
       if (drop >= CONFIG.coldSurgeDrop && (!m.coldSurge || drop > m.coldSurge.drop)) m.coldSurge = { drop, low: v, label: dayName(D.time[j], k) };
     }
   }
+  try { m.pa = pressureAnalysis(d, m); } catch (e) { m.pa = null; }
   return m;
 }
 
@@ -654,7 +742,7 @@ function analyze(m, T){
     if (g >= 40) parts.push('ลมกระโชกแรงราว ' + rnd(g) + ' กม./ชม.');
     if (r >= 10) parts.push('ฝนตกหนักถึง ' + mm(r) + ' มม. ใน 1 ชม.');
     parts.push('มีฟ้าผ่า');
-    add({ lv, icon: '⛈️',
+    add({ kind: 'storm', lv, icon: '⛈️',
       short: lv >= 2 ? 'เตือนภัยพายุฝน' : 'ระวังพายุฝน ฟ้าผ่า',
       title: (lv >= 2 ? 'เตือนภัยพายุฝนฟ้าคะนอง ' : 'ระวังพายุฝนฟ้าคะนอง ฟ้าผ่า ') + wThunder,
       detail: parts.join(' ') + ' ' + (lv >= 2
@@ -685,8 +773,75 @@ function analyze(m, T){
       detail: bits.join(' ') + ' เก็บผ้าที่ตากและของนอกบ้านไว้ก่อน คนที่ทำงานกลางแจ้งหรืออยู่ในทุ่งนาเตรียมหาที่หลบ ดูแลเด็กและคนแก่ไม่ให้ไม่สบาย' });
   }
 
-  // 6) อากาศเปลี่ยนแปลง อุณหภูมิลดลงเร็ว (มวลอากาศเย็น)
-  if (m.coldSurge){
+  // ===== จากการเคลื่อนที่ของความกดอากาศ =====
+  const pa = m.pa;
+  if (pa){
+    const at = i => whenFar(T[Math.min(T.length - 1, i)], m.today);
+    // ก) หย่อมความกดอากาศต่ำ / พายุหมุน เคลื่อนเข้าใกล้
+    if (pa.low && pa.low.lv){
+      const L0 = pa.low, f0 = L0.first, nr = L0.near, storm = L0.deep <= 998;
+      const what = storm ? 'พายุหมุน' : 'หย่อมความกดอากาศต่ำ';
+      const reg = regionName(f0.lat, f0.lon, f0.edge);
+      const where = (reg ? 'บริเวณ' + reg + ' ' : '') + 'ห่าง' + (f0.edge ? 'มากกว่า ' : 'ราว ') + kmText(f0.dist) + ' ทางทิศ' + dir8(f0.brg);
+      add({ lv: L0.lv, icon: '🌀',
+        short: L0.lv >= 2 ? (storm ? 'พายุกำลังเข้า' : 'ระวังพายุฝนต่อเนื่อง') : 'ติดตามความกดอากาศต่ำ',
+        title: (L0.lv >= 2 ? 'เตือนภัย' : 'เฝ้าระวัง') + what + (L0.approaching ? 'เคลื่อนเข้าใกล้ ' : L0.forming ? 'ก่อตัวใกล้พื้นที่ ' : 'ปกคลุมพื้นที่ ') + at(m.i0 + nr.h),
+        detail: (L0.forming ? 'คาดว่าจะก่อตัว' + where + ' ' + at(m.i0 + f0.h) : 'ตอนนี้อยู่' + where) +
+          (L0.move != null ? ' กำลังเคลื่อนไปทางทิศ' + dir8(L0.move) : '') +
+          (nr.dist < 120 ? ' คาดว่าจะเคลื่อนผ่านพื้นที่นี้โดยตรง' : ' คาดว่าจะเข้าใกล้ที่สุดราว ' + kmText(nr.dist)) + ' ความกดอากาศที่ศูนย์กลางราว ' + Math.round(L0.deep) + ' hPa ' + {
+          3: 'ฝนจะตกหนักถึงหนักมากต่อเนื่อง ลมแรง ขนของขึ้นที่สูง ตุนน้ำ อาหาร ยา ไฟฉาย ชาร์จโทรศัพท์ให้เต็ม บ้านที่อยู่ที่ลุ่มหรือไม่แข็งแรงเตรียมอพยพ ติดตามประกาศกรมอุตุนิยมวิทยาและ ปภ.',
+          2: 'ฝนจะเพิ่มขึ้นและตกหนักบางแห่ง ลมแรง เตรียมรับมือน้ำท่วมฉับพลันและน้ำป่า ติดตามประกาศกรมอุตุนิยมวิทยา',
+          1: 'อาจทำให้มีฝนเพิ่มขึ้นในอีกไม่กี่วัน ติดตามข่าวพยากรณ์อากาศ'
+        }[L0.lv] });
+    }
+    // ข) ลมหนาว / มรสุมตะวันออกเฉียงเหนือ / ร่องมรสุมถูกดันลงมา
+    if (pa.cold && !pa.summer){
+      const c = pa.cold, when = at(c.idx);
+      const cnTxt = pa.cn && pa.cn.rise >= 3.5 ? 'ความกดอากาศสูงจากจีนกำลังแผ่ลงมา ' : 'ความกดอากาศสูงกำลังแผ่ลงมา ';
+      const windTxt = c.wind && c.wind.spd >= 3 ? 'ลม' + dir8(c.wind.dir) + 'พัดแรงขึ้น ' : '';
+      if (pa.season === 'rain'){
+        add({ lv: 0, icon: '🌧️', short: 'ฝนอาจเพิ่มขึ้น', title: cnTxt + 'ฝนอาจเพิ่มขึ้น ' + when,
+          detail: 'ร่องมรสุมจะถูกดันให้เลื่อนลงมา ทำให้ฝนเพิ่มขึ้นและอาจตกหนักบางแห่ง ติดตามพยากรณ์อากาศ' });
+      } else if (state.place.lat < 11){
+        const east = state.place.lon > 99.3;
+        add({ lv: c.strong ? 2 : 1, icon: '🌊', short: 'มรสุมกำลังแรง คลื่นลมแรง',
+          title: 'มรสุมตะวันออกเฉียงเหนือกำลังแรงขึ้น ' + when,
+          detail: cnTxt + windTxt + (east ? 'ภาคใต้ฝั่งตะวันออกจะมีฝนตกหนักบางแห่ง ' : 'ฝนจะเพิ่มขึ้น ') +
+            'คลื่นลมแรง ชาวประมงและเรือเล็กควรงดออกจากฝั่ง ระวังน้ำท่วมฉับพลันและน้ำป่า' });
+      } else {
+        const lv = c.strong ? 2 : (c.tdrop >= 3 || c.localRise >= 3.5) ? 1 : 0;
+        add({ lv, icon: '🥶', short: lv === 2 ? 'ลมหนาวกำลังแรงมา' : 'ลมหนาวมา',
+          title: (lv === 2 ? 'ลมหนาวกำลังแรงมา ' : 'ลมหนาวมา ') + when,
+          detail: cnTxt + (c.tdrop >= 1 ? 'อุณหภูมิจะลดลงราว ' + rnd(c.tdrop) + '° ต่ำสุดราว ' + rnd(c.tlow) + '° ' : 'อากาศจะเย็นลงเล็กน้อย ') + windTxt +
+            'อากาศแห้ง ฟ้าโปร่ง ' + (pa.month === 10 || pa.month === 11 ? 'ช่วงต้นหนาวอาจมีฝนฟ้าคะนองก่อนอากาศจะเย็นลง ' : '') +
+            'เตรียมเสื้อกันหนาวและผ้าห่ม ดูแลเด็ก คนแก่ และสัตว์เลี้ยงให้อยู่ในที่กันลม ระวังไฟไหม้หญ้าเพราะอากาศแห้ง' });
+      }
+    }
+    // ค) พายุฤดูร้อน (ถ้าแบบจำลองมีพายุใน 12 ชม.แล้ว จะรวมเข้ากับหัวข้อพายุเดิม)
+    if (pa.summer && !m.thunderIdx.length){
+      add({ lv: pa.summer.lv, icon: '⛈️', short: 'ระวังพายุฤดูร้อน', title: 'ระวังพายุฤดูร้อน ' + at(pa.summer.idx),
+        detail: 'ความกดอากาศสูงจากจีนแผ่ลงมาปะทะอากาศร้อนอบอ้าว (ร้อนสุดราว ' + rnd(pa.summer.tx) + '°) จะเกิดพายุฝนฟ้าคะนอง ลมกระโชกแรง และอาจมีลูกเห็บตก ' +
+          'ผูกยึดหลังคาสังกะสี ตัดกิ่งไม้ที่อาจหักใส่บ้าน ไม่หลบใต้ต้นไม้ใหญ่หรือป้ายโฆษณา จอดรถในที่มีหลังคา' });
+    }
+    // ง) ความกดอากาศลดลง ฝนมีแนวโน้มเพิ่ม
+    if (pa.rain){
+      const lvR = pa.rain.lv;
+      add({ lv: lvR, icon: '📉', short: lvR ? 'ความกดอากาศลดเร็ว' : 'ฝนมีแนวโน้มเพิ่ม',
+        title: (lvR ? 'ความกดอากาศลดลงเร็ว ระวังฝนตกหนัก ลมแรง ' : 'ความกดอากาศลดลง ฝนมีแนวโน้มเพิ่มขึ้น ') + at(pa.rain.idx),
+        detail: 'ความกดอากาศจะลดลงราว ' + Math.abs(pa.rain.fall).toFixed(1) + ' hPa ใน 2 วัน' + (pa.rain.moist >= 0.5 ? ' และอากาศชื้นขึ้น' : '') + ' อากาศจะลอยตัวเกิดเมฆฝนได้ง่าย ' +
+          (lvR ? 'อาจมีร่องความกดอากาศต่ำหรือพายุเข้ามา เตรียมรับมือฝนตกหนักและน้ำท่วมขัง' : 'พกร่ม วางแผนงานกลางแจ้งเผื่อฝน เก็บผลผลิตที่ตากไว้ให้พร้อม') });
+    }
+    // จ) ลมร้อน (หัวข้อรอง)
+    if (pa.hot){
+      const h = pa.hot;
+      add({ lv: 0, icon: '🔥', short: 'ลมร้อน', title: 'ลมร้อนพัด อากาศร้อนแห้ง ' + at(h.idx),
+        detail: 'หย่อมความกดอากาศต่ำจากความร้อนปกคลุม ' + (h.wind ? 'ลม' + dir8(h.wind.dir) + 'พัดเอาอากาศร้อนเข้ามา ' : '') +
+          'ร้อนสุดราว ' + rnd(h.tmax) + '° ความชื้นต่ำราว ' + rnd(h.rh) + '% ระวังไฟไหม้หญ้าและไฟป่า งดเผาขยะ ดื่มน้ำบ่อยๆ ให้สัตว์เลี้ยงอยู่ในที่ร่ม' });
+    }
+  }
+
+  // 6) อากาศเปลี่ยนแปลง อุณหภูมิลดลงเร็ว (มวลอากาศเย็น) ถ้าความกดอากาศยืนยันแล้ว ใช้หัวข้อลมหนาวแทน
+  if (m.coldSurge && !(pa && pa.cold)){
     add({ lv: 1, icon: '🌡️', short: 'อากาศเปลี่ยน อุณหภูมิลด',
       title: 'อากาศเปลี่ยนแปลง อุณหภูมิลดลงราว ' + rnd(m.coldSurge.drop) + '° ' + m.coldSurge.label,
       detail: 'ต่ำสุดราว ' + rnd(m.coldSurge.low) + '° อากาศจะเย็นลงเร็ว เตรียมเสื้อกันหนาวและผ้าห่ม ดูแลเด็ก คนแก่ และสัตว์เลี้ยงไม่ให้ป่วย' });
@@ -746,7 +901,7 @@ function analyze(m, T){
   if (m.rainyDays >= 3) add({ lv: 0, icon: '🦟', short: 'ระวังยุงลาย', title: 'ฝนตกหลายวัน ระวังยุงลาย ไข้เลือดออก', detail: 'เทน้ำขังทิ้ง คว่ำภาชนะ ปิดฝาโอ่ง นอนในมุ้ง' });
 
   // อากาศร้อน (หัวข้อรอง ไม่ทำให้ระดับภัยสูงขึ้น)
-  if (m.feel24 >= CONFIG.heatWatch && m.feelIdx >= 0){
+  if (m.feel24 >= CONFIG.heatWatch && m.feelIdx >= 0 && !(m.pa && m.pa.hot)){
     const word = m.feel24 >= CONFIG.heatWarn ? 'ร้อนจัด' : 'อากาศร้อน';
     const span = windowText(m.heatIdx, T, m.today);
     add({ lv: 0, icon: '☀️', short: word,
@@ -761,8 +916,437 @@ function analyze(m, T){
       detail: 'ใส่หมวก เสื้อแขนยาว ทาครีมกันแดด ถ้าออกไปทำนาทำสวนตอนกลางวัน' });
   }
 
+  // พายุจากแบบจำลอง + รูปแบบความกดอากาศของพายุฤดูร้อน = รวมเป็นหัวข้อเดียว
+  if (m.pa && m.pa.summer){
+    const st = L.find(x => x.kind === 'storm');
+    if (st){
+      st.lv = Math.max(st.lv, m.pa.summer.lv); st.short = 'เตือนภัยพายุฤดูร้อน';
+      st.title = st.title.replace(/^(เตือนภัย|ระวัง)พายุฝนฟ้าคะนอง( ฟ้าผ่า)? /, 'เตือนภัยพายุฤดูร้อน ');
+      st.detail = 'ความกดอากาศสูงจากจีนแผ่ลงมาปะทะอากาศร้อน อาจมีลูกเห็บตก ' + st.detail;
+    }
+  }
   L.sort((a, b) => (b.lv - a.lv) || ((b.head ? 1 : 0) - (a.head ? 1 : 0)) || (a.order - b.order));
   return L;
+}
+
+/* ================== ความกดอากาศ: ดึงข้อมูล ติดตามการเคลื่อนที่ และแปลผล ================== */
+// จุดตรวจในจีนตอนใต้ (หนานหนิง กุ้ยหลิน เป็นที่ราบต่ำ ค่าเชื่อถือได้) ใช้จับความกดอากาศสูงที่กำลังแผ่ลงมา
+const CN_PROBES = [[22.82, 108.32], [25.27, 110.29]];
+const GRID_N = 3, GRID_STEP = 2.5;          // กริด 7x7 จุด รอบพื้นที่ ห่างกันราว 275 กม. (ครอบคลุมราว ±800 กม.)
+const GRID_SIDE = GRID_N * 2 + 1, GRID_PTS = GRID_SIDE * GRID_SIDE;
+const GRID_MAX_AGE = 60 * 60 * 1000;        // ดึงกริดใหม่ทุก 1 ชม.
+const DIR8 = ['เหนือ', 'ตะวันออกเฉียงเหนือ', 'ตะวันออก', 'ตะวันออกเฉียงใต้', 'ใต้', 'ตะวันตกเฉียงใต้', 'ตะวันตก', 'ตะวันตกเฉียงเหนือ'];
+const dir8 = deg => DIR8[Math.round((((deg % 360) + 360) % 360) / 45) % 8];
+const samePlace = (a, b) => !!(a && b && Math.abs(a.lat - b.lat) < 1e-3 && Math.abs(a.lon - b.lon) < 1e-3);
+const kmText = k => (Math.round(k / 50) * 50).toLocaleString('en-US') + ' กม.';
+const hpa = v => (v > 0.05 ? '+' : v < -0.05 ? '−' : '±') + Math.abs(v).toFixed(1) + ' hPa';
+function hav(a1, o1, a2, o2){
+  const r = Math.PI / 180, dA = (a2 - a1) * r, dO = (o2 - o1) * r;
+  const x = Math.sin(dA / 2) ** 2 + Math.cos(a1 * r) * Math.cos(a2 * r) * Math.sin(dO / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(x));
+}
+function bearing(a1, o1, a2, o2){
+  const r = Math.PI / 180;
+  const y = Math.sin((o2 - o1) * r) * Math.cos(a2 * r);
+  const x = Math.cos(a1 * r) * Math.sin(a2 * r) - Math.sin(a1 * r) * Math.cos(a2 * r) * Math.cos((o2 - o1) * r);
+  return (Math.atan2(y, x) / r + 360) % 360;
+}
+function regionName(lat, lon, edge){
+  if (edge && lon >= 107 && lat >= 5 && lat <= 22.5) return 'ทะเลจีนใต้';
+  if (edge && lon <= 94 && lat >= 8 && lat <= 22) return 'อ่าวเบงกอล';
+  if (lon >= 109.5 && lat >= 5 && lat <= 22.5) return 'ทะเลจีนใต้';
+  if (lon >= 104.5 && lon < 109.5 && lat >= 16 && lat <= 23) return 'เวียดนามตอนบน';
+  if (lon <= 92.5 && lat >= 8 && lat <= 22) return 'อ่าวเบงกอล';
+  if (lon > 92.5 && lon <= 98 && lat >= 6 && lat <= 16) return 'ทะเลอันดามัน';
+  if (lon >= 99.3 && lon <= 104.8 && lat >= 6 && lat <= 13.4) return 'อ่าวไทย';
+  return '';
+}
+function dayOffset(t, today){ return Math.round((Date.parse(t.slice(0, 10) + 'T00:00:00Z') - Date.parse(today + 'T00:00:00Z')) / 864e5); }
+function dayShort(t){ const [y, mo, da] = t.slice(0, 10).split('-').map(Number); return TH_DAYS[new Date(y, mo - 1, da).getDay()] + ' ' + da; }
+// บอกวันและช่วงเวลา ใช้ได้ไกลหลายวัน เช่น "พรุ่งนี้ช่วงบ่าย" "ส. 13 ต.ค. ช่วงเช้า"
+function whenFar(t, today){
+  const dd = dayOffset(t, today), h = +t.slice(11, 13);
+  const part = h < 6 ? 'ช่วงเช้ามืด' : h < 11 ? 'ช่วงเช้า' : h < 13 ? 'ช่วงเที่ยง' : h < 16 ? 'ช่วงบ่าย' : h < 19 ? 'ช่วงเย็น' : 'ช่วงค่ำ';
+  if (dd <= 0) return 'วันนี้' + part;
+  if (dd === 1) return h < 6 ? 'คืนนี้ช่วงดึก' : 'พรุ่งนี้' + part;
+  if (dd === 2) return 'มะรืนนี้' + part;
+  return dayShort(t) + ' ' + TH_MONTHS[+t.slice(5, 7) - 1] + ' ' + part;
+}
+// ค่าเฉลี่ย 24 ชม. รอบจุดนั้น ตัดรอบขึ้นลงประจำวันออก เหลือแนวโน้มจริง
+function runMean(P, i){
+  let s = 0, c = 0;
+  for (let k = i - 12; k < i + 12; k++){ if (k >= 0 && k < P.length && P[k] != null){ s += P[k]; c++; } }
+  return c >= 22 ? s / c : null;
+}
+// ทิศลมเฉลี่ยแบบเวกเตอร์ (ทิศที่ลมพัดมา)
+function windMean(H, a, b){
+  const WD = H.wind_direction_10m, WS = H.wind_speed_10m;
+  if (!WD || !WS) return null;
+  let u = 0, v = 0, c = 0;
+  for (let i = Math.max(0, a); i < Math.min(WD.length, b); i++){
+    if (WD[i] == null || WS[i] == null) continue;
+    const r = WD[i] * Math.PI / 180; u -= WS[i] * Math.sin(r); v -= WS[i] * Math.cos(r); c++;
+  }
+  if (!c) return null;
+  return { dir: (Math.atan2(-u, -v) * 180 / Math.PI + 360) % 360, spd: Math.hypot(u, v) / c };
+}
+const northish = w => !!(w && w.spd >= 3 && (w.dir >= 300 || w.dir <= 100));
+const southish = w => !!(w && w.spd >= 3 && w.dir >= 135 && w.dir <= 285);
+const avgOf = a => { const v = a.filter(x => x != null); return v.length ? v.reduce((s, x) => s + x, 0) / v.length : null; };
+
+/* ----- กริดความกดอากาศรอบพื้นที่ + จุดตรวจในจีน (ขอครั้งเดียวหลายจุด) ----- */
+function gridUrl(lat, lon){
+  const la = [], lo = [];
+  for (let i = -GRID_N; i <= GRID_N; i++) for (let j = -GRID_N; j <= GRID_N; j++){
+    la.push((lat + i * GRID_STEP).toFixed(2)); lo.push((lon + j * GRID_STEP).toFixed(2));
+  }
+  CN_PROBES.forEach(([a, b]) => { la.push(a); lo.push(b); });
+  return 'https://api.open-meteo.com/v1/forecast?' + new URLSearchParams({
+    latitude: la.join(','), longitude: lo.join(','), hourly: 'pressure_msl',
+    timeformat: 'unixtime', timezone: 'GMT', past_days: 1, forecast_days: 4
+  });
+}
+function parseGrid(r, place){
+  if (!Array.isArray(r) || r.length < GRID_PTS + CN_PROBES.length) return null;
+  const time = r[0] && r[0].hourly && r[0].hourly.time;
+  if (!Array.isArray(time) || !time.length) return null;
+  const pts = r.slice(0, GRID_PTS).map((x, k) => ({
+    lat: x.latitude, lon: x.longitude, elev: x.elevation,
+    i: Math.floor(k / GRID_SIDE), j: k % GRID_SIDE, P: (x.hourly && x.hourly.pressure_msl) || [] }));
+  const cn = r.slice(GRID_PTS, GRID_PTS + CN_PROBES.length).map(x => (x.hourly && x.hourly.pressure_msl) || []);
+  return { t: Date.now(), place: { lat: place.lat, lon: place.lon }, t0: time[0] * 1000, pts, cn };
+}
+let gridBusy = false;
+async function loadGrid(){
+  const p = state.place;
+  if (!p || gridBusy) return;
+  const g = state.grid;
+  if (g && samePlace(g.place, p) && Date.now() - g.t < GRID_MAX_AGE) return;
+  gridBusy = true;
+  try {
+    const grid = parseGrid(await getJSON(gridUrl(p.lat, p.lon), 15000), p);
+    if (grid && samePlace(state.place, p)){
+      state.grid = grid; store.set('wx_grid', grid);
+      if (state.data) render();
+    }
+  } catch (e) {} finally { gridBusy = false; }
+}
+
+/* ----- วิเคราะห์ ----- */
+function pressureAnalysis(d, m){
+  const H = d.hourly, P = H.pressure_msl;
+  if (!Array.isArray(P) || P[m.i0] == null) return null;
+  const T = H.time, n = T.length, i0 = m.i0, user = state.place;
+  const off = typeof d.utc_offset_seconds === 'number' ? d.utc_offset_seconds : 0;
+  const ep = i => Date.parse(T[i] + ':00Z') - off * 1000;
+  const at = i => (i >= 0 && i < n && P[i] != null) ? P[i] : null;
+  // เทียบกับเวลาเดียวกันของวันก่อน จะตัดรอบขึ้นลงวันละ 2 รอบออกไปเอง
+  const d24 = i => (at(i) != null && at(i - 24) != null) ? at(i) - at(i - 24) : null;
+  const chg = h => at(i0 + h) != null ? at(i0 + h) - P[i0] : null;
+  const month = +m.today.slice(5, 7);
+  const season = (month >= 6 && month <= 9) ? 'rain' : (month >= 3 && month <= 5) ? 'hot' : 'cold';
+  const pa = { now: P[i0], trendNow: runMean(P, i0), past24: d24(i0), next24: chg(24), next48: chg(48), season, month };
+
+  // ข้อมูลกราฟ: ย้อนหลัง 2 วัน ล่วงหน้า 4 วัน
+  const a0 = Math.max(12, i0 - 48), a1 = Math.min(n - 13, i0 + 96);
+  pa.series = [];
+  for (let i = a0; i <= a1; i++) pa.series.push({ t: T[i], raw: at(i), sm: runMean(P, i) });
+  pa.nowPos = i0 - a0;
+
+  // ลมเปลี่ยนทิศ
+  pa.windNow = windMean(H, i0 - 2, i0 + 3);
+  pa.windLater = windMean(H, i0 + 30, i0 + 48);
+  if (pa.windNow && pa.windLater && pa.windNow.spd >= 4 && pa.windLater.spd >= 4){
+    let dd = Math.abs(pa.windNow.dir - pa.windLater.dir) % 360; if (dd > 180) dd = 360 - dd;
+    if (dd >= 90 && dir8(pa.windNow.dir) !== dir8(pa.windLater.dir)) pa.shift = { from: pa.windNow.dir, to: pa.windLater.dir };
+  }
+
+  // กริดรอบพื้นที่ และจีนตอนใต้
+  const G = state.grid && samePlace(state.grid.place, user) ? state.grid : null;
+  pa.grid = !!G;
+  const e0 = ep(i0);
+  const gi = e => Math.round((e - G.t0) / 3600000);
+  if (G && G.cn.length){
+    const cnP = k => { let s = 0, c = 0; G.cn.forEach(a => { if (k >= 0 && a[k] != null){ s += a[k]; c++; } }); return c ? s / c : null; };
+    let rise = null, riseH = 0, pmax = null;
+    for (let h = 0; h <= 72; h += 3){
+      const k = gi(e0 + h * 3600e3), a = cnP(k), b = cnP(k - 24);
+      if (a != null && b != null && (rise == null || a - b > rise)){ rise = a - b; riseH = h; }
+      if (a != null && (pmax == null || a > pmax)) pmax = a;
+    }
+    const cnNow = cnP(gi(e0));
+    const cla = avgOf(CN_PROBES.map(p => p[0])), clo = avgOf(CN_PROBES.map(p => p[1]));
+    if (rise != null) pa.cn = { rise, riseH, pmax, now: cnNow, grad: cnNow != null ? cnNow - P[i0] : null,
+      dist: hav(user.lat, user.lon, cla, clo), brg: bearing(user.lat, user.lon, cla, clo) };
+  }
+
+  // ----- ลมหนาว / ความกดอากาศสูงแผ่ลงมา -----
+  let arrive = -1, localRise = 0;
+  for (let i = i0; i <= Math.min(n - 1, i0 + 96); i++){
+    const v = d24(i); if (v == null) continue;
+    if (v > localRise) localRise = v;
+    if (arrive < 0 && v >= 2.5) arrive = i;
+  }
+  const D = d.daily; let tdrop = 0, tlow = null;
+  if (D && D.temperature_2m_min && D.temperature_2m_min[m.di] != null){
+    for (let k = 1; k <= 4; k++){
+      const v = D.temperature_2m_min[m.di + k];
+      if (v != null && D.temperature_2m_min[m.di] - v > tdrop){ tdrop = D.temperature_2m_min[m.di] - v; tlow = v; }
+    }
+  }
+  const wArr = arrive >= 0 ? windMean(H, arrive, arrive + 24) : pa.windLater;
+  const cnSig = !!(pa.cn && pa.cn.rise >= 3.5);
+  const locSig = localRise >= 2.5;
+  if ((cnSig && (locSig || northish(wArr))) || (locSig && localRise >= 3.5 && northish(wArr))){
+    const idx = arrive >= 0 ? arrive : Math.min(n - 1, i0 + Math.min(96, (pa.cn ? pa.cn.riseH : 0) + 24));
+    pa.cold = { idx, localRise, tdrop, tlow, wind: wArr, cnRise: pa.cn ? pa.cn.rise : null,
+      strong: (pa.cn && pa.cn.rise >= 7) || localRise >= 5 || tdrop >= 5 };
+  }
+
+  // ----- พายุฤดูร้อน: ความกดอากาศสูงปะทะอากาศร้อนชื้น (ก.พ.–พ.ค.) -----
+  if (month >= 2 && month <= 5 && (cnSig || locSig)){
+    const tx = mx(sl(H.temperature_2m, i0, i0 + 48));
+    const dew = H.dew_point_2m ? mx(sl(H.dew_point_2m, i0, i0 + 48)) : null;
+    const cape = mx(sl(H.cape || [], i0, i0 + 48));
+    let th = -1;
+    for (let i = i0 + 1; i <= Math.min(n - 1, i0 + 48); i++) if (H.weather_code[i] >= 95){ th = i; break; }
+    if (tx >= 34 && (dew == null || dew >= 22) && (cape >= 1500 || th >= 0)){
+      pa.summer = { idx: th >= 0 ? th : (pa.cold ? pa.cold.idx : Math.min(n - 1, i0 + 24)), tx, cape,
+        lv: (cape >= 2500 || th >= 0) ? 2 : 1 };
+    }
+  }
+
+  // ----- หย่อมความกดอากาศต่ำ / พายุ: หาศูนย์กลางในกริด ทุก 24 ชม. แล้วดูทิศทางเคลื่อนที่ -----
+  if (G){
+    const valid = G.pts.filter(p => p.P.length && (p.elev == null || p.elev <= 600));   // ตัดยอดเขา ค่าเพี้ยนง่าย
+    const steps = [0, 24, 48, 72].map(h => {
+      const k = gi(e0 + h * 3600e3);
+      const vals = valid.map(p => ({ p, v: p.P[k] })).filter(x => x.v != null);
+      if (vals.length < 15) return null;
+      const s = vals.map(x => x.v).sort((a, b) => a - b), med = s[s.length >> 1];
+      let lo = vals[0]; vals.forEach(x => { if (x.v < lo.v) lo = x; });
+      let sw = 0, la = 0, lg = 0;
+      vals.forEach(x => { if (x.v <= lo.v + 1.5){ const w = lo.v + 1.5 - x.v + 0.3; sw += w; la += x.p.lat * w; lg += x.p.lon * w; } });
+      const lat = la / sw, lon = lg / sw;
+      return { h, min: lo.v, depth: med - lo.v, lat, lon,
+        edge: lo.p.i === 0 || lo.p.i === GRID_SIDE - 1 || lo.p.j === 0 || lo.p.j === GRID_SIDE - 1,
+        dist: hav(user.lat, user.lon, lat, lon), brg: bearing(user.lat, user.lon, lat, lon) };
+    });
+    const isLow = s => !!(s && s.min <= 1003 && s.depth >= 3.5);
+    const lows = steps.filter(isLow);
+    if (lows.length >= 2){
+      const first = lows[0], last = lows[lows.length - 1];
+      const near = lows.reduce((a, b) => b.dist < a.dist ? b : a);
+      const deep = Math.min(...lows.map(s => s.min));
+      const forming = !isLow(steps[0]);
+      const approaching = near.h > first.h && near.dist <= first.dist - 200;
+      const move = hav(first.lat, first.lon, last.lat, last.lon) >= 150 ? bearing(first.lat, first.lon, last.lat, last.lon) : null;
+      let lv = 0;
+      if (approaching || forming){
+        if (near.dist <= 300 && deep <= 998) lv = 3;
+        else if (near.dist <= 500 && deep <= 1002) lv = 2;
+        else if (near.dist <= 800) lv = 1;
+      } else if (near.dist <= 300 && deep <= 1000) lv = 2;
+      pa.low = { steps, lows, first, last, near, deep, forming, approaching, move, lv };
+    }
+  }
+
+  // ----- ลมร้อน: ร้อนจัด แห้ง ลมใต้/ตะวันตกเฉียงใต้ ใต้หย่อมความกดอากาศต่ำจากความร้อน -----
+  const RH = H.relative_humidity_2m || [], WD = H.wind_direction_10m || [], WS = H.wind_speed_10m || [], TT = H.temperature_2m;
+  const hot = [];
+  for (let i = i0; i <= Math.min(n - 1, i0 + 48); i++){
+    if (TT[i] >= 36 && RH[i] != null && RH[i] <= 50 && WD[i] != null && WD[i] >= 135 && WD[i] <= 285 && (WS[i] || 0) >= 8) hot.push(i);
+  }
+  const base = pa.trendNow != null ? pa.trendNow : P[i0];
+  if (hot.length >= 3 && (base <= 1008 || (pa.past24 != null && pa.past24 <= -0.5))){
+    pa.hot = { idx: hot[0], tmax: mx(hot.map(i => TT[i])), rh: mn(hot.map(i => RH[i])), wind: windMean(H, hot[0], hot[hot.length - 1] + 1) };
+  }
+
+  // ----- ความกดอากาศลดลง = ฝนมีแนวโน้มเพิ่ม / สูงขึ้นและแห้งลง = ฟ้าเปิด -----
+  const DP = H.dew_point_2m || [];
+  const dewPast = avgOf(sl(DP, i0 - 24, i0)), dewNext = avgOf(sl(DP, i0 + 24, i0 + 48));
+  const moist = (dewPast != null && dewNext != null) ? dewNext - dewPast : 0;
+  if (!pa.low && pa.next48 != null && pa.next48 <= -2.5 && moist >= -0.3){
+    let idx = -1;
+    for (let i = i0 + 1; i <= Math.min(n - 1, i0 + 48); i++){ const v = d24(i); if (v != null && v <= -1.5){ idx = i; break; } }
+    pa.rain = { fall: pa.next48, moist, lv: pa.next48 <= -5 ? 1 : 0, idx: idx >= 0 ? idx : Math.min(n - 1, i0 + 24) };
+  }
+  if (!pa.cold && pa.next48 != null && pa.next48 >= 2.5 && moist <= -1) pa.dry = { rise: pa.next48 };
+  return pa;
+}
+
+/* ----- คำอธิบายสั้นๆ ว่าความกดอากาศบอกอะไร ----- */
+function pressureReads(pa, m, T){
+  const R = [], at = i => whenFar(T[Math.min(T.length - 1, i)], m.today);
+  if (pa.low){
+    const L = pa.low, f = L.first;
+    const reg = regionName(f.lat, f.lon, f.edge);
+    const where = (reg ? reg + ' ' : '') + 'ห่าง' + (f.edge ? 'มากกว่า ' : 'ราว ') + kmText(f.dist) + ' ทางทิศ' + dir8(f.brg);
+    let t = (L.forming ? 'คาดว่าจะมีหย่อมความกดอากาศต่ำก่อตัวที่' + where + ' ' + at(m.i0 + f.h) : 'มีหย่อมความกดอากาศต่ำอยู่ที่' + where);
+    if (L.move != null) t += ' กำลังเคลื่อนไปทางทิศ' + dir8(L.move);
+    t += L.approaching || L.forming ? (L.near.dist < 120 ? ' และจะเคลื่อนผ่านพื้นที่นี้' : ' และจะเข้าใกล้ที่สุดราว ' + kmText(L.near.dist)) + ' ' + at(m.i0 + L.near.h) : ' ยังไม่เคลื่อนเข้าหาพื้นที่นี้';
+    R.push(['🌀', t + ' (ศูนย์กลางราว ' + Math.round(L.deep) + ' hPa)']);
+  }
+  if (pa.cold){
+    const c = pa.cold;
+    const what = pa.season === 'cold' ? 'มวลอากาศเย็นกำลังแผ่ลงมา ' : 'ความกดอากาศสูงกำลังแผ่ลงมา ';
+    R.push([pa.season === 'cold' ? '🥶' : '🌬️', (pa.cn && pa.cn.rise >= 3.5 ? 'ความกดอากาศที่จีนตอนใต้สูงขึ้น ' + hpa(pa.cn.rise) + ' แสดงว่า' + what : 'ความกดอากาศสูงขึ้นพร้อมลมเปลี่ยนเป็นลมฝั่งเหนือ ') +
+      'จะถึงพื้นที่นี้ราว' + at(c.idx) + (c.tdrop >= 1 ? ' อุณหภูมิต่ำสุดจะลดลงราว ' + rnd(c.tdrop) + '°' : '')]);
+  } else if (pa.cn && pa.season === 'cold' && pa.cn.pmax >= 1016){
+    R.push(['🧊', pa.cn.grad != null && pa.cn.grad >= 6 && northish(pa.windNow)
+      ? 'ความกดอากาศสูงจากจีน (ราว ' + Math.round(pa.cn.pmax) + ' hPa) ปกคลุมอยู่ ลมฝั่งเหนือพัดต่อเนื่อง อากาศเย็นและแห้ง ยังไม่มีระลอกใหม่เพิ่มเข้ามา'
+      : 'มีความกดอากาศสูงอยู่ทางจีน (ราว ' + Math.round(pa.cn.pmax) + ' hPa) แต่ยังไม่แผ่ลงมาถึงพื้นที่นี้']);
+  }
+  if (pa.summer) R.push(['⛈️', 'อากาศร้อนอบอ้าวกำลังจะเจอความกดอากาศสูงที่แผ่ลงมา เป็นสูตรของพายุฤดูร้อน ระวังช่วง' + at(pa.summer.idx)]);
+  if (pa.rain) R.push(['📉', 'ความกดอากาศจะลดลง ' + hpa(pa.rain.fall) + ' ใน 2 วัน' + (pa.rain.moist >= 0.5 ? ' และอากาศชื้นขึ้น' : '') + ' อากาศจะลอยตัวเกิดเมฆฝนง่าย ฝนมีแนวโน้มเพิ่มขึ้น']);
+  if (pa.dry) R.push(['☀️', 'ความกดอากาศจะสูงขึ้น ' + hpa(pa.dry.rise) + ' และอากาศแห้งลง ฝนจะลดลง ท้องฟ้าโปร่งขึ้น']);
+  if (pa.hot) R.push(['🔥', 'ความกดอากาศต่ำจากความร้อนปกคลุม ลม' + (pa.hot.wind ? dir8(pa.hot.wind.dir) : 'ใต้') + 'พัดพาอากาศร้อนแห้งเข้ามา']);
+  if (pa.shift){
+    const to = { dir: pa.shift.to, spd: 5 };
+    R.push(['🧭', 'ลมจะเปลี่ยนทิศจากลม' + dir8(pa.shift.from) + ' เป็นลม' + dir8(pa.shift.to) + ' ภายใน 2 วัน' +
+      (northish(to) ? ' มักเป็นสัญญาณอากาศเย็นและแห้งลง' : southish(to) ? ' ลมนี้พาความชื้นจากทะเลเข้ามา ฝนมักเพิ่มขึ้น' : '')]);
+  }
+  if (!R.length) R.push(['✅', 'ความกดอากาศค่อนข้างคงที่ ยังไม่มีระบบอากาศใหญ่เคลื่อนเข้ามา อากาศช่วงนี้จะคล้ายๆ เดิม']);
+  if (!pa.grid) R.push(['ℹ️', 'ยังไม่ได้ข้อมูลความกดอากาศรอบพื้นที่ (ต้องต่ออินเทอร์เน็ต) ตอนนี้วิเคราะห์จากจุดเดียว']);
+  return R;
+}
+
+/* ----- แสดงผล ----- */
+function renderPressure(m, T){
+  const blk = $('#pxBlk'), pa = m.pa;
+  if (!pa){ blk.hidden = true; return; }
+  blk.hidden = false;
+  const fut = pa.next48;
+  const st = fut == null ? 'ทรงตัว' : fut >= 5 ? 'สูงขึ้นเร็ว' : fut >= 2 ? 'กำลังสูงขึ้น' : fut <= -5 ? 'ลดลงเร็ว' : fut <= -2 ? 'กำลังลดลง' : 'ทรงตัว';
+  const arrow = /สูง/.test(st) ? '↑' : /ลด/.test(st) ? '↓' : '→';
+  $('#pxNow').textContent = pa.now.toFixed(1);
+  const chip = $('#pxChip');
+  chip.textContent = arrow + ' ' + st;
+  chip.className = 'pxchip ' + (/สูง/.test(st) ? 'up' : /ลด/.test(st) ? 'down' : '');
+  const sub = [];
+  if (pa.past24 != null) sub.push('24 ชม.ที่ผ่านมา ' + hpa(pa.past24));
+  if (fut != null) sub.push('อีก 2 วัน ' + hpa(fut));
+  if (pa.windNow && pa.windNow.spd >= 2) sub.push('ลม' + dir8(pa.windNow.dir) + ' ' + rnd(pa.windNow.spd) + ' กม./ชม.');
+  $('#pxSub').textContent = sub.join(' · ');
+  $('#pxReads').innerHTML = pressureReads(pa, m, T).map(r => '<li><span class="ic" aria-hidden="true">' + r[0] + '</span><span>' + esc(r[1]) + '</span></li>').join('');
+  drawPressureChart(pa);
+  drawPressureMap(pa);
+  // ตาราง
+  const rows = [];
+  let prev = null;
+  pa.series.forEach(p => {
+    if (p.t.slice(11, 13) !== '12' || p.sm == null) return;
+    rows.push('<tr><td>' + esc(dayShort(p.t) + ' ' + TH_MONTHS[+p.t.slice(5, 7) - 1]) + '</td><td>' + p.sm.toFixed(1) + '</td><td>' + (prev == null ? '–' : hpa(p.sm - prev).replace(' hPa', '')) + '</td></tr>');
+    prev = p.sm;
+  });
+  $('#pxTbl').innerHTML = '<thead><tr><th>วัน</th><th>เฉลี่ย (hPa)</th><th>เทียบวันก่อน</th></tr></thead><tbody>' + rows.join('') + '</tbody>';
+}
+
+function drawPressureChart(pa){
+  const svg = $('#pxChart'), tip = $('#pxTip'), S = pa.series, N = S.length;
+  if (N < 2){ svg.innerHTML = ''; return; }
+  const W = Math.max(280, Math.round(svg.parentNode.clientWidth || 600)), Hh = 200;
+  const ml = 44, mr = 10, mt = 22, mb = 26, pw = W - ml - mr, ph = Hh - mt - mb;
+  const vals = []; S.forEach(p => { if (p.raw != null) vals.push(p.raw); if (p.sm != null) vals.push(p.sm); });
+  let lo = Math.floor(Math.min(...vals) - 0.5), hi = Math.ceil(Math.max(...vals) + 0.5);
+  if (hi - lo < 4){ const c = (hi + lo) / 2; lo = Math.floor(c - 2); hi = Math.ceil(c + 2); }
+  const step = [1, 2, 5, 10].find(s => (hi - lo) / s <= 4) || 10;
+  lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  const x = i => ml + (i / (N - 1)) * pw, y = v => mt + (1 - (v - lo) / (hi - lo)) * ph;
+  const f = v => v.toFixed(1);
+  let g = '';
+  const xn = x(pa.nowPos);
+  g += '<rect class="pxfc" x="' + f(xn) + '" y="' + mt + '" width="' + f(ml + pw - xn) + '" height="' + ph + '"/>';
+  for (let v = lo; v <= hi; v += step){
+    g += '<line class="pxgrid" x1="' + ml + '" x2="' + (ml + pw) + '" y1="' + f(y(v)) + '" y2="' + f(y(v)) + '"/>' +
+      '<text class="pxax" x="' + (ml - 6) + '" y="' + f(y(v) + 4) + '" text-anchor="end">' + v + '</text>';
+  }
+  S.forEach((p, i) => {
+    const h = p.t.slice(11, 13);
+    if (h === '00' && i > 0) g += '<line class="pxgrid" x1="' + f(x(i)) + '" x2="' + f(x(i)) + '" y1="' + mt + '" y2="' + (mt + ph) + '"/>';
+    if (h === '12') g += '<text class="pxax" x="' + f(x(i)) + '" y="' + (Hh - 8) + '" text-anchor="middle">' + esc(dayShort(p.t)) + '</text>';
+  });
+  const path = key => { let s = '', pen = false; S.forEach((p, i) => { const v = p[key]; if (v == null){ pen = false; return; } s += (pen ? 'L' : 'M') + f(x(i)) + ' ' + f(y(v)); pen = true; }); return s; };
+  g += '<path class="pxraw" d="' + path('raw') + '"/><path class="pxsm" d="' + path('sm') + '"/>';
+  g += '<line class="pxnow" x1="' + f(xn) + '" x2="' + f(xn) + '" y1="' + (mt - 4) + '" y2="' + (mt + ph) + '"/>' +
+    '<text class="pxax pxnowt" x="' + f(xn) + '" y="' + (mt - 8) + '" text-anchor="middle">ตอนนี้</text>' +
+    '<text class="pxax" x="' + (ml + pw) + '" y="' + (mt - 8) + '" text-anchor="end">พยากรณ์ →</text>';
+  g += '<line class="pxcross" id="pxCross" x1="0" x2="0" y1="' + mt + '" y2="' + (mt + ph) + '" visibility="hidden"/>' +
+    '<circle class="pxdot" id="pxDot" r="4" cx="0" cy="0" visibility="hidden"/>';
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + Hh);
+  svg.setAttribute('width', W); svg.setAttribute('height', Hh);
+  svg.innerHTML = g;
+  // เส้นเล็งและป้ายค่า (แตะหรือเลื่อนนิ้วบนกราฟ / ปุ่มลูกศร)
+  let cur = pa.nowPos;
+  const show = i => {
+    cur = Math.max(0, Math.min(N - 1, i));
+    const p = S[cur], v = p.sm != null ? p.sm : p.raw;
+    const cr = $('#pxCross'), dt = $('#pxDot');
+    if (!cr || v == null) return;
+    cr.setAttribute('x1', f(x(cur))); cr.setAttribute('x2', f(x(cur))); cr.setAttribute('visibility', 'visible');
+    dt.setAttribute('cx', f(x(cur))); dt.setAttribute('cy', f(y(v))); dt.setAttribute('visibility', 'visible');
+    tip.textContent = '';
+    const b = document.createElement('b'); b.textContent = (p.raw != null ? p.raw.toFixed(1) : '–') + ' hPa';
+    const s1 = document.createElement('span'); s1.textContent = 'แนวโน้ม ' + (p.sm != null ? p.sm.toFixed(1) : '–');
+    const s2 = document.createElement('span'); s2.textContent = dayShort(p.t) + ' ' + TH_MONTHS[+p.t.slice(5, 7) - 1] + ' ' + p.t.slice(11, 16) + ' น.';
+    tip.append(b, s1, s2);
+    tip.hidden = false;
+    const box = svg.getBoundingClientRect(), fig = svg.parentNode.getBoundingClientRect();
+    const px = (box.left - fig.left) + x(cur) / W * (box.width || W);
+    const tw = tip.offsetWidth || 120;
+    tip.style.left = Math.max(4, Math.min((fig.width || W) - tw - 4, px - tw / 2)) + 'px';
+  };
+  const hide = () => { const cr = $('#pxCross'), dt = $('#pxDot'); if (cr) cr.setAttribute('visibility', 'hidden'); if (dt) dt.setAttribute('visibility', 'hidden'); tip.hidden = true; };
+  svg.onpointermove = e => { const r = svg.getBoundingClientRect(); if (!r.width) return; const vx = (e.clientX - r.left) * W / r.width; show(Math.round((vx - ml) / pw * (N - 1))); };
+  svg.onpointerdown = svg.onpointermove;
+  svg.onpointerleave = hide;
+  svg.onfocus = () => show(cur);
+  svg.onblur = hide;
+  svg.onkeydown = e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ e.preventDefault(); show(cur + (e.key === 'ArrowRight' ? 3 : -3)); }
+  };
+}
+
+function drawPressureMap(pa){
+  const fig = $('#pxMapFig'), svg = $('#pxMap');
+  const showH = !!(pa.cn && pa.cn.now != null && (pa.cold || pa.cn.pmax >= 1015 || pa.cn.rise >= 3.5));
+  const lows = pa.low ? pa.low.lows : [];
+  if (!showH && !lows.length){ fig.hidden = true; return; }
+  fig.hidden = false;
+  const cx = 160, cy = 140, K = 80 / 1000, RMAX = 108;
+  const f = v => v.toFixed(1);
+  const pos = (dist, brg) => { const r = Math.min(dist * K, RMAX), a = brg * Math.PI / 180; return [cx + r * Math.sin(a), cy - r * Math.cos(a)]; };
+  let g = '<defs><marker id="pxArrB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="pxfillH"/></marker>' +
+    '<marker id="pxArrL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="pxfillL"/></marker></defs>';
+  g += '<circle class="pxring" cx="' + cx + '" cy="' + cy + '" r="40"/><circle class="pxring" cx="' + cx + '" cy="' + cy + '" r="80"/>' +
+    '<text class="pxax" x="' + cx + '" y="' + (cy + 53) + '" text-anchor="middle">500 กม.</text><text class="pxax" x="' + cx + '" y="' + (cy + 93) + '" text-anchor="middle">1,000 กม.</text>';
+  [['เหนือ', cx, 14], ['ใต้', cx, 276], ['ตะวันออก', 290, cy + 4], ['ตะวันตก', 30, cy + 4]].forEach(c => {
+    g += '<text class="pxax pxcomp" x="' + c[1] + '" y="' + c[2] + '" text-anchor="middle">' + c[0] + '</text>';
+  });
+  if (showH){
+    const [hx, hy] = pos(pa.cn.dist, pa.cn.brg);
+    if (pa.cold || pa.cn.rise >= 3.5){
+      const dx = cx - hx, dy = cy - hy, L = Math.hypot(dx, dy) || 1;
+      g += '<line class="pxarrH" x1="' + f(hx + dx / L * 20) + '" y1="' + f(hy + dy / L * 20) + '" x2="' + f(hx + dx / L * Math.max(30, L - 24)) + '" y2="' + f(hy + dy / L * Math.max(30, L - 24)) + '" marker-end="url(#pxArrB)"/>';
+    }
+    g += '<circle class="pxH" cx="' + f(hx) + '" cy="' + f(hy) + '" r="14"/><text class="pxHL" x="' + f(hx) + '" y="' + f(hy + 5) + '" text-anchor="middle">H</text>' +
+      '<text class="pxax" x="' + f(hx) + '" y="' + f(hy < cy ? hy - 20 : hy + 28) + '" text-anchor="middle">จีน ' + Math.round(pa.cn.pmax) + ' hPa</text>';
+  }
+  if (lows.length){
+    const pts = lows.map(s => pos(s.dist, s.brg));
+    if (pts.length > 1) g += '<polyline class="pxarrL" points="' + pts.map(p => f(p[0]) + ',' + f(p[1])).join(' ') + '" marker-end="url(#pxArrL)"/>';
+    lows.forEach((s, k) => {
+      const [lx, ly] = pts[k];
+      g += k === 0 ? '<circle class="pxL" cx="' + f(lx) + '" cy="' + f(ly) + '" r="13"/><text class="pxHL" x="' + f(lx) + '" y="' + f(ly + 5) + '" text-anchor="middle">L</text>'
+        : '<circle class="pxLd" cx="' + f(lx) + '" cy="' + f(ly) + '" r="4"/>';
+    });
+    const [lx, ly] = pts[0];
+    g += '<text class="pxax" x="' + f(lx) + '" y="' + f(ly + 27) + '" text-anchor="middle">' + Math.round(pa.low.deep) + ' hPa</text>';
+    const [ex, ey] = pts[pts.length - 1];
+    if (pts.length > 1) g += '<text class="pxax" x="' + f(ex) + '" y="' + f(ey - 9) + '" text-anchor="middle">+' + lows[lows.length - 1].h / 24 + ' วัน</text>';
+  }
+  g += '<circle class="pxhome" cx="' + cx + '" cy="' + cy + '" r="6"/><text class="pxax pxhomet" x="' + cx + '" y="' + (cy + 20) + '" text-anchor="middle">บ้านเรา</text>';
+  svg.innerHTML = g;
 }
 
 /* ================== แสดงผล ================== */
@@ -849,6 +1433,10 @@ function render(){
   }
   $('#days').innerHTML = dh;
 
+  // ความกดอากาศ
+  state.lastPa = m.pa;
+  try { renderPressure(m, T); } catch (e) { $('#pxBlk').hidden = true; }
+
   // ตัวเลขที่ใช้ตัดสิน
   const facts = [
     ['ฝนที่ตกไปแล้วใน 3 วัน', mm(m.past72) + ' มม.'],
@@ -859,6 +1447,12 @@ function render(){
     ['ลมกระโชกแรงสุด (24 ชม.)', rnd(m.gust24) + ' กม./ชม.'],
     ['ร้อนสุดแบบรู้สึก (24 ชม.)', rnd(m.feel24) + '°' + (m.feelIdx >= 0 ? ' (' + whenLabel(T[m.feelIdx], m.today) + ')' : '')],
     ['ความแปรปรวนของบรรยากาศ (12 ชม.)', m.hasCape ? (m.cape12 < 1000 ? 'ต่ำ' : m.cape12 < 2500 ? 'ปานกลาง' : m.cape12 < 3500 ? 'สูง' : 'สูงมาก') + ' (CAPE ' + rnd(m.cape12) + ')' : 'ไม่มีข้อมูล'],
+    ...(m.pa ? [
+      ['ความกดอากาศตอนนี้', m.pa.now.toFixed(1) + ' hPa'],
+      ['เทียบเวลาเดียวกันเมื่อวาน', m.pa.past24 != null ? hpa(m.pa.past24) : '–'],
+      ['คาดการณ์อีก 48 ชม.', m.pa.next48 != null ? hpa(m.pa.next48) : '–'],
+      ...(m.pa.cn && m.pa.cn.now != null ? [['ความกดอากาศจีนตอนใต้', Math.round(m.pa.cn.now) + ' hPa (สูงขึ้นสุด ' + hpa(m.pa.cn.rise) + ' ใน 24 ชม.)']] : [])
+    ] : []),
     ['ต่ำสุด (24 ชม.)', rnd(m.tmin24) + '°' + (m.tminIdx >= 0 ? ' (' + whenLabel(T[m.tminIdx], m.today) + ')' : '')]
   ];
   if (m.river){
@@ -885,7 +1479,11 @@ function forSpeech(s){
     .replace(/ชม\./g, 'ชั่วโมง')
     .replace(/°/g, ' องศา')
     .replace(/%/g, ' เปอร์เซ็นต์')
-    .replace(/PM2\.5/g, 'พีเอ็ม 2.5');
+    .replace(/PM2\.5/g, 'พีเอ็ม 2.5')
+    .replace(/hPa/g, ' เฮกโตปาสกาล')
+    .replace(/(อา|พฤ|จ|อ|พ|ศ|ส)\. (?=\d)/g, (x, d) => 'วัน' + ({ 'อา': 'อาทิตย์', 'จ': 'จันทร์', 'อ': 'อังคาร', 'พ': 'พุธ', 'พฤ': 'พฤหัสบดี', 'ศ': 'ศุกร์', 'ส': 'เสาร์' })[d] + 'ที่ ')
+    .replace(/(ม\.ค|ก\.พ|มี\.ค|เม\.ย|พ\.ค|มิ\.ย|ก\.ค|ส\.ค|ก\.ย|ต\.ค|พ\.ย|ธ\.ค)\./g, x => ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'][TH_MONTHS.indexOf(x)])
+    .replace(/กม\./g, 'กิโลเมตร');
 }
 
 function agoText(t){
@@ -1212,6 +1810,10 @@ function init(){
   $('#ver').textContent = 'เวอร์ชัน ' + APP_VERSION;
   initPWA();
   // เปิดแอปแล้วเห็นข้อมูลชุดล่าสุดทันที (ใช้ได้แม้ไม่มีเน็ต) แล้วค่อยโหลดของใหม่
+  const gc = store.get('wx_grid');
+  if (gc && gc.place && Array.isArray(gc.pts) && samePlace(gc.place, state.place) && Date.now() - gc.t < 3 * 864e5) state.grid = gc;
+  let rsT = null;
+  window.addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(() => { if (state.lastPa) try { drawPressureChart(state.lastPa); } catch (e) {} }, 200); });
   const cache = store.get('wx_cache');
   if (cache && cache.data && cache.place && Math.abs(cache.place.lat - state.place.lat) < 1e-4 &&
       Math.abs(cache.place.lon - state.place.lon) < 1e-4 && Date.now() - cache.t < 3 * 864e5){
